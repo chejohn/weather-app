@@ -1,0 +1,142 @@
+:root {
+    --darkGrey: #343a40;
+    --form-valid-color:#00a0ff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+body {
+    font-size: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+}
+
+.container {display: flex;}
+
+.sub-container1,
+.sub-container2 {
+    height: 100vh;
+}
+
+header {
+    background-color: var(--darkGrey);
+    width: 100vw;
+    height: 6.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.search-bttn {
+    background-color: #eb6f4c;
+    border-radius: 5px;
+    padding: 3.4px 1.5rem;
+    position: relative;
+    top: 3px;
+    margin-left: 4px;
+    transition: 0.2s;
+}
+
+.search-bttn:hover {background-color: #f0947a;}
+
+.search-bttn > img {
+    position: relative;
+    top: 2px;
+}
+
+input {
+    position: relative;
+    padding: 0.2rem;
+    color: white;
+    border: none;
+    width: 42vw;
+    background-color: transparent;
+    border-bottom: 1px solid white;
+    outline: none;
+    z-index: 1;
+    caret-color: var(--form-valid-color);
+}
+
+input:focus ~ .placeholder, 
+input:valid ~.placeholder {
+    bottom: 25px;
+    font-size: 0.5rem;
+    color:var(--form-valid-color);
+}
+
+input::before {
+    content:'';
+    width: 200px;
+    background-color: black;
+    display: block;
+    height: 200px;
+    position: fixed;
+
+}
+
+.open-weather-icon {margin-left: 3.5rem;}
+
+.temp-bttn {
+    margin-right: 3rem;
+    padding: 10px 4rem;
+    border-radius: 5px;
+    transition: 0.2s;
+}
+
+.temp-bttn:hover {opacity: 0.8;}
+
+.search-container {
+    position: relative;
+    margin-right: auto;
+    margin-left: 4rem;
+}
+
+.placeholder {
+    color: white;
+    position: absolute;
+    bottom: 3px;
+    left: 3px;
+    transition: 0.2s;
+}
+
+@media screen and (max-width: 913px) {
+    input {width: 35vw;}
+
+    .temp-bttn {padding: 10px 2rem;}
+}
+
+@media screen and (max-width: 731px) {
+    header {
+        flex-direction: column;
+        height: 11rem;
+        align-content:center;
+    }
+    
+    .open-weather-icon,
+    .search-container,
+    .temp-bttn {margin: 0;}
+
+    input {width: 65vw;}
+
+    .temp-bttn {padding: 10px 6rem;}
+}
+@media screen and (max-width: 281px) {
+    .search-bttn {
+        transform: scale(0.8);
+        top: 6px;
+    }
+
+    .placeholder {font-size: 0.9rem;}
+
+    .temp-bttn {padding: 10px 5rem;}
+}
