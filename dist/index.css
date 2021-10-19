@@ -3,6 +3,7 @@
     --form-valid-color:#00a0ff;
     --border-color: #dee2e6;
     --more-info-color: #6c757d;
+    --chance-rain-color: #007bff;
 }
 
 * {
@@ -192,6 +193,10 @@ input:valid ~.placeholder {
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+}
+
+.hourly-status-panel > p:nth-child(2) {
+    color: var(--chance-rain-color);
 }
 
 .more-info-grid {
