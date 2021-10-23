@@ -6,7 +6,7 @@
     --chance-rain-color: #007bff;
 }
 
-* {
+*, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -22,6 +22,10 @@ body {
 button {
     cursor: pointer;
     border: none;
+}
+
+.container {
+    position: relative;
 }
 
 .sub-container1 {
@@ -303,3 +307,33 @@ input:valid ~.placeholder {
     }
 }
 
+.loader-container {
+    position:absolute;
+    z-index: 2;
+    top: 6.5rem;
+    width: 100%;
+    height: 100%;
+    background: white;
+}
+
+@media screen and (max-width: 731px) {
+    .loader-container {top: 11rem;}
+}
+
+.loader {
+    width: 100px;
+    height: 100px;
+    margin: 3rem auto;
+    border: 10px solid #dddddd;
+    border-radius: 50%;
+    border-top: 10px solid var(--darkGrey);
+    animation: loading 1s linear infinite;
+}
+
+@keyframes loading {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+.current-temp {font-weight: bold;}

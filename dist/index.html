@@ -10,18 +10,21 @@
 </head>
 <body>
     <div class='container'>
+        <div class='loader-container'>
+            <div class='loader'></div>
+        </div>
         <div class='sub-container1'>
             <header>
                 <img src='https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png' width='100' class='open-weather-icon'>
                 <div class='search-container'>
                     <input type='text' required>
                     <button class='search-bttn'><img src='./images/searchIcon.svg'></button>
-                    <p class='placeholder'>Enter Your Location Here...</p>
+                    <p class='placeholder'>Enter A City or ZIP Code...</p>
                 </div>
-                <button class='temp-bttn'>&deg;C / &deg;F</button>
+                <button class='temp-bttn'>&deg;<span class='celcius'>C</span> / &deg;<span class='fahrenheit current-temp'>F</span></button>
             </header>
             <section class='today-status-container'>
-                <div class='current-status-container'>
+                <div class='current-status-container current-interface-1'>
                     <h2>London</h2>
                     <h4>Clear</h4>
                     <h1>53&deg;</h1>
@@ -31,107 +34,197 @@
                     <div class='hourly-status-panel'>
                         <strong>Now</strong>
                         <p>8%</p>
-                        <img src='./images/weatherIcon.png' width=100>
+                        <img src='https://openweathermap.org/img/wn/10d@4x.png' width=100>
                         <p>52&deg;</p>
                     </div>
                     <div class='hourly-status-panel'>
-                        <p>17</p>
+                        <p>12 pm</p>
                         <p>8%</p>
                         <img src='./images/weatherIcon.png' width=100>
                         <p>52&deg;</p>
                     </div>
                     <div class='hourly-status-panel'>
-                        <p>17</p>
+                        <p>1 pm</p>
                         <p>8%</p>
                         <img src='./images/weatherIcon.png' width=100>
                         <p>52&deg;</p>
                     </div>
                     <div class='hourly-status-panel'>
-                        <p>17</p>
+                        <p>2 pm</p>
                         <p>8%</p>
                         <img src='./images/weatherIcon.png' width=100>
                         <p>52&deg;</p>
                     </div>
                     <div class='hourly-status-panel'>
-                        <p>17</p>
+                        <p>3 pm</p>
                         <p>8%</p>
                         <img src='./images/weatherIcon.png' width=100>
                         <p>52&deg;</p>
                     </div>
                     <div class='hourly-status-panel'>
-                        <p>17</p>
+                        <p>4 pm</p>
                         <p>8%</p>
                         <img src='./images/weatherIcon.png' width=100>
                         <p>52&deg;</p>
                     </div>
                     <div class='hourly-status-panel'>
-                        <p>17</p>
+                        <p>5 pm</p>
                         <p>8%</p>
                         <img src='./images/weatherIcon.png' width=100>
                         <p>52&deg;</p>
                     </div>
                     <div class='hourly-status-panel'>
-                        <p>17</p>
+                        <p>6 pm</p>
                         <p>8%</p>
                         <img src='./images/weatherIcon.png' width=100>
                         <p>52&deg;</p>
                     </div>
                     <div class='hourly-status-panel'>
-                        <p>17</p>
+                        <p>7 pm</p>
                         <p>8%</p>
                         <img src='./images/weatherIcon.png' width=100>
                         <p>52&deg;</p>
                     </div>
                     <div class='hourly-status-panel'>
-                        <p>17</p>
+                        <p>8 pm</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>9 pm</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>10 pm</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>11 pm</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>12 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>1 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>2 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>3 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>4 pm</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>5 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>6 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>7 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>8 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>9 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>10 am</p>
+                        <p>8%</p>
+                        <img src='./images/weatherIcon.png' width=100>
+                        <p>52&deg;</p>
+                    </div>
+                    <div class='hourly-status-panel'>
+                        <p>11 am</p>
                         <p>8%</p>
                         <img src='./images/weatherIcon.png' width=100>
                         <p>52&deg;</p>
                     </div>
                 </div>
-                <p>Today: clear sky. The high will be 62&deg;. The low tonight will be 53&deg;</p>
+                <p class= 'current-weather-statement'>Today: clear sky. The high will be 62&deg;. The low tonight will be 53&deg;</p>
             </section>
             <section class='more-info-container'>
                 <div class='more-info-grid'>
                     <div class='more-info-cell'>
                         <p>SUNRISE</p>
-                        <p>07:10</p>
+                        <p class='current-interface-2'>07:10</p>
                     </div>
                     <div class='more-info-cell'>
                         <p>SUNSET</p>
-                        <p>18:10</p>
+                        <p class='current-interface-2'>18:10</p>
                     </div>
                     <div class='more-info-cell'>
                         <p>CHANCE OF RAIN</p>
-                        <p>0%</p>
+                        <p class='current-interface-2'>0%</p>
                     </div>
                     <div class='more-info-cell'>
                         <p>HUMIDITY</p>
-                        <p>67%</p>
+                        <p class='current-interface-2'>67%</p>
                     </div>
                     <div class='more-info-cell'>
                         <p>WIND</p>
-                        <p>NE 3 km/hr</p>
+                        <p class='current-interface-2'>NE 3 km/hr</p>
                     </div>
                     <div class='more-info-cell'>
                         <p>FEELS LIKE</p>
-                        <p>64&deg;</p>
+                        <p class='current-interface-2'>64&deg;</p>
                     </div>
                     <div class='more-info-cell'>
                         <p>PRECIPITATION</p>
-                        <p>0%</p>
+                        <p class='current-interface-2'>0 cm</p>
                     </div>
                     <div class='more-info-cell'>
                         <p>PRESSURE</p>
-                        <p>1019 hPa</p>
+                        <p class='current-interface-2'>1019 hPa</p>
                     </div>
                     <div class='more-info-cell'>
                         <p>VISIBILITY</p>
-                        <p>100km</p>
+                        <p class='current-interface-2'>100km</p>
                     </div>
                     <div class='more-info-cell'>
                         <p>UV INDEX</p>
-                        <p>0</p>
+                        <p class='current-interface-2'>0</p>
                     </div>
                 </div>
             </section>
