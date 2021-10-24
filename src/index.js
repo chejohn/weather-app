@@ -1,16 +1,3 @@
-/* 
-example API call with zipcode data:
-api.openweathermap.org/data/2.5/weather?zip={zip code}&appid={API key}
-
-example API call with cityname data
-api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
-
-//open weather
-API Key: 0c0e7e85e0b79f8172ab494cd0e6830a
-
-check on convert chance of rain to perrcent function
-*/
-
 import '@babel/polyfill';
 
 // returns a Promise that resolves to latitude and longitude;
@@ -33,7 +20,7 @@ const getGeoData = async (defaultLocation) => {
   const latitude = locationObj.results[0].geometry.location.lat;
   const longitude = locationObj.results[0].geometry.location.lng;
   return [latitude, longitude, city];
-  }
+}
 
 const getWeatherData = async (latitude, longitude) => {
   const responseObj = await fetch(
@@ -147,7 +134,7 @@ const convertToWindVector = (windSpeed, windDegrees) => {
 }
 
 // if rainFall data is present, convert it to cm
-const getRainData = (rainFall) => `${rainFall * 10} cm`;
+const getRainData = (rainFall) => `${Math.floor(rainFall * 10)} cm`;
 
 const toVisibilityInMiles = (meters) => `${Math.floor(meters/1610)} m`;
 
@@ -162,7 +149,7 @@ const filterForCurrentData = (weatherObj) => {
   const feelsLike = `${Math.floor(currentData.feels_like)}&deg;`;
   
   try {
-    precipitation = getRainData(currentData.rain['1hr']);
+    precipitation = getRainData(currentData.rain['1h']);
   }
   catch {
     precipitation = `0 cm`;
@@ -183,7 +170,8 @@ const filterForCurrentData = (weatherObj) => {
     visibility,
      uvIndex, 
      temp, 
-     weatherState}
+     weatherState
+    }
 }
 
 const filterForHourlyData = (iteration, weatherObj) => {
@@ -228,13 +216,106 @@ const filterForDailyData = (iteration, weatherObj) => {
   }
 }
 
-const changeTemp = () => {
-  GlobalNodes.celcius.classList.toggle('current-temp');
-  GlobalNodes.fahrenheit.classList.toggle('current-temp');
+const convertToCelcius = (fahrenheit) => {
+  const rawNumber = fahrenheit.match(/(\d+)/)[0];
+  return `${Math.floor((rawNumber - 32) * 5/9)}&deg;`;
+}
+
+const updateTempInterface = (tempReading) => {
+  const TempData = GlobalNodes.tempData[tempReading];
+  GlobalNodes.currentInterface1.children[3]
+    .innerHTML = `H:${TempData.daily.today.high} L:${TempData.daily.today.low}`;
+  GlobalNodes.currentInterface1.children[2]
+    .innerHTML = TempData.current.temp;
+
+  const weatherState = GlobalNodes.weatherDescription.innerHTML.match(/^([^.]+)/)[0];
+  GlobalNodes.weatherDescription
+    .innerHTML = `${weatherState}. The high will be ${TempData.daily.today.high}. The low tonight will be ${TempData.daily.today.nightTemp}.`;
+
+  GlobalNodes.currentInterface2[5].innerHTML = TempData.current.feelsLike;
+
+  for (let i = 0; i < GlobalNodes.hourlyInterface.length; i++) {
+    const hourlyEntry = GlobalNodes.hourlyInterface[i];
+    hourlyEntry.children[3].innerHTML = TempData.hourly[i];
+  }
+
+  for (let i = 0; i < GlobalNodes.weekTemp.length; i++) {
+    GlobalNodes.weekTemp[i].innerHTML = `${TempData.daily.week.high[i]} ${TempData.daily.week.low[i]}`;
+  }
+} 
+
+const changeTemp = (toggle = true) => {
+  if (toggle) {
+    GlobalNodes.celcius.classList.toggle('current-temp');
+    GlobalNodes.fahrenheit.classList.toggle('current-temp');
+  }
+  if (GlobalNodes.celcius.classList.length > 1) {
+    updateTempInterface('celcius');
+  }
+  else updateTempInterface('fahrenheit');
+}
+
+const storeTempData = (Data, period) => {
+  const fahrenheitContainer = GlobalNodes.tempData.fahrenheit;
+  const celciusContainer = GlobalNodes.tempData.celcius;
+  if (period === 'current') {
+    fahrenheitContainer.current = {};
+    celciusContainer.current = {};
+    const fahrenheitTemp = Data.temp;
+    const fahrenheitFeelsLike = Data.feelsLike;
+
+    fahrenheitContainer.current.temp = fahrenheitTemp;
+    fahrenheitContainer.current.feelsLike = fahrenheitFeelsLike;
+    celciusContainer.current.temp = convertToCelcius(fahrenheitTemp);
+    celciusContainer.current.feelsLike = convertToCelcius(fahrenheitFeelsLike);
+  }
+  else if (period === 'hourly') {
+    if (!fahrenheitContainer.hourly && !celciusContainer.hourly) {
+      fahrenheitContainer.hourly = [];
+      celciusContainer.hourly = [];
+    }
+    fahrenheitContainer.hourly.push(Data.temp);
+    celciusContainer.hourly.push(convertToCelcius(Data.temp));
+  }
+  else {
+    if (!fahrenheitContainer.daily && !celciusContainer.daily) {
+      fahrenheitContainer.daily = {};
+      celciusContainer.daily = {};
+      fahrenheitContainer.daily.today = 
+        {
+          nightTemp: Data.nightTemp,
+          high: Data.highTemp,
+          low: Data.lowTemp
+        };
+      fahrenheitContainer.daily.week = 
+        {
+          high: [],
+          low: []
+        };
+      celciusContainer.daily.today = 
+        {
+          nightTemp: convertToCelcius(Data.nightTemp),
+          high: convertToCelcius(Data.highTemp),
+          low: convertToCelcius(Data.lowTemp)
+        };
+      celciusContainer.daily.week = 
+        {
+          high: [],
+          low: []
+        };
+    } 
+    else {
+      fahrenheitContainer.daily.week.high.push(Data.highTemp);
+      fahrenheitContainer.daily.week.low.push(Data.lowTemp);
+      celciusContainer.daily.week.high.push(convertToCelcius(Data.highTemp));
+      celciusContainer.daily.week.low.push(convertToCelcius(Data.lowTemp));
+    }
+  }
 }
 
 const updateCurrentComponent = (weatherObj, location) => {
   const CurrentData = filterForCurrentData(weatherObj);
+  storeTempData(CurrentData, 'current');
   const currentInterfaceArr = GlobalNodes.currentInterface1.children;
   currentInterfaceArr[0].textContent = location;
   currentInterfaceArr[1].textContent = CurrentData.weatherState;
@@ -256,6 +337,7 @@ const updateHourlyComponent = (weatherObj) => {
   const hourlyInterfaceArr = GlobalNodes.hourlyInterface;
   for (let i = 0; i < hourlyInterfaceArr.length; i++) {
     const HourlyData = filterForHourlyData(i, weatherObj);
+    storeTempData(HourlyData, 'hourly');
     const hourlyEntry = hourlyInterfaceArr[i];
     if (i !== 0) {
       hourlyEntry.children[0].textContent = HourlyData.time;
@@ -269,6 +351,7 @@ const updateHourlyComponent = (weatherObj) => {
 const updateDailyComponent = (weatherObj) => {
   for (let i = 0; i < 8; i++) {
     const DailyData = filterForDailyData(i, weatherObj);
+    storeTempData(DailyData, 'daily');
     if (i === 0) {
       const highTemp = DailyData.highTemp;
       GlobalNodes.currentInterface1.children[3].innerHTML = `H:${highTemp} L:${DailyData.lowTemp}`;
@@ -294,11 +377,15 @@ const updateDailyComponent = (weatherObj) => {
 
 const runApp = async (defaultLocation = false) => {
   document.body.appendChild(GlobalNodes.loadingInterface);
+  GlobalNodes.tempData = { fahrenheit: {}, celcius: {} };
   const [latitude, longitude, location] = await getGeoData(defaultLocation);
   const weatherObj = await getWeatherData(latitude, longitude);
   updateCurrentComponent(weatherObj, location);
   updateHourlyComponent(weatherObj);
   updateDailyComponent(weatherObj);
+  if (GlobalNodes.celcius.classList.length > 1) {
+    changeTemp(false);
+  }
   GlobalNodes.loadingInterface.remove();
 };
 
@@ -318,7 +405,7 @@ const GlobalNodes = (() => {
   const fahrenheit = document.querySelector('.fahrenheit');
   const loadingInterface = document.querySelector('.loader-container');
   loadingInterface.remove();
-  const tempData = {'fahrenheit': {}, 'celcius': {}};
+  let tempData;
   return { 
     input, 
     searchBttn, 

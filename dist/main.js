@@ -9977,18 +9977,6 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-/* 
-example API call with zipcode data:
-api.openweathermap.org/data/2.5/weather?zip={zip code}&appid={API key}
-
-example API call with cityname data
-api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
-
-//open weather
-API Key: 0c0e7e85e0b79f8172ab494cd0e6830a
-
-check on convert chance of rain to perrcent function
-*/
  // returns a Promise that resolves to latitude and longitude;
 
 var getGeoData = /*#__PURE__*/function () {
@@ -10195,7 +10183,7 @@ var convertToWindVector = function convertToWindVector(windSpeed, windDegrees) {
 
 
 var getRainData = function getRainData(rainFall) {
-  return "".concat(rainFall * 10, " cm");
+  return "".concat(Math.floor(rainFall * 10), " cm");
 };
 
 var toVisibilityInMiles = function toVisibilityInMiles(meters) {
@@ -10212,7 +10200,7 @@ var filterForCurrentData = function filterForCurrentData(weatherObj) {
   var feelsLike = "".concat(Math.floor(currentData.feels_like), "&deg;");
 
   try {
-    precipitation = getRainData(currentData.rain['1hr']);
+    precipitation = getRainData(currentData.rain['1h']);
   } catch (_unused) {
     precipitation = "0 cm";
   }
@@ -10279,13 +10267,97 @@ var filterForDailyData = function filterForDailyData(iteration, weatherObj) {
   };
 };
 
+var convertToCelcius = function convertToCelcius(fahrenheit) {
+  var rawNumber = fahrenheit.match(/(\d+)/)[0];
+  return "".concat(Math.floor((rawNumber - 32) * 5 / 9), "&deg;");
+};
+
+var updateTempInterface = function updateTempInterface(tempReading) {
+  var TempData = GlobalNodes.tempData[tempReading];
+  GlobalNodes.currentInterface1.children[3].innerHTML = "H:".concat(TempData.daily.today.high, " L:").concat(TempData.daily.today.low);
+  GlobalNodes.currentInterface1.children[2].innerHTML = TempData.current.temp;
+  var weatherState = GlobalNodes.weatherDescription.innerHTML.match(/^([^.]+)/)[0];
+  GlobalNodes.weatherDescription.innerHTML = "".concat(weatherState, ". The high will be ").concat(TempData.daily.today.high, ". The low tonight will be ").concat(TempData.daily.today.nightTemp, ".");
+  GlobalNodes.currentInterface2[5].innerHTML = TempData.current.feelsLike;
+
+  for (var i = 0; i < GlobalNodes.hourlyInterface.length; i++) {
+    var hourlyEntry = GlobalNodes.hourlyInterface[i];
+    hourlyEntry.children[3].innerHTML = TempData.hourly[i];
+  }
+
+  for (var _i = 0; _i < GlobalNodes.weekTemp.length; _i++) {
+    GlobalNodes.weekTemp[_i].innerHTML = "".concat(TempData.daily.week.high[_i], " ").concat(TempData.daily.week.low[_i]);
+  }
+};
+
 var changeTemp = function changeTemp() {
-  GlobalNodes.celcius.classList.toggle('current-temp');
-  GlobalNodes.fahrenheit.classList.toggle('current-temp');
+  var toggle = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+  if (toggle) {
+    GlobalNodes.celcius.classList.toggle('current-temp');
+    GlobalNodes.fahrenheit.classList.toggle('current-temp');
+  }
+
+  if (GlobalNodes.celcius.classList.length > 1) {
+    updateTempInterface('celcius');
+  } else updateTempInterface('fahrenheit');
+};
+
+var storeTempData = function storeTempData(Data, period) {
+  var fahrenheitContainer = GlobalNodes.tempData.fahrenheit;
+  var celciusContainer = GlobalNodes.tempData.celcius;
+
+  if (period === 'current') {
+    fahrenheitContainer.current = {};
+    celciusContainer.current = {};
+    var fahrenheitTemp = Data.temp;
+    var fahrenheitFeelsLike = Data.feelsLike;
+    fahrenheitContainer.current.temp = fahrenheitTemp;
+    fahrenheitContainer.current.feelsLike = fahrenheitFeelsLike;
+    celciusContainer.current.temp = convertToCelcius(fahrenheitTemp);
+    celciusContainer.current.feelsLike = convertToCelcius(fahrenheitFeelsLike);
+  } else if (period === 'hourly') {
+    if (!fahrenheitContainer.hourly && !celciusContainer.hourly) {
+      fahrenheitContainer.hourly = [];
+      celciusContainer.hourly = [];
+    }
+
+    fahrenheitContainer.hourly.push(Data.temp);
+    celciusContainer.hourly.push(convertToCelcius(Data.temp));
+  } else {
+    if (!fahrenheitContainer.daily && !celciusContainer.daily) {
+      fahrenheitContainer.daily = {};
+      celciusContainer.daily = {};
+      fahrenheitContainer.daily.today = {
+        nightTemp: Data.nightTemp,
+        high: Data.highTemp,
+        low: Data.lowTemp
+      };
+      fahrenheitContainer.daily.week = {
+        high: [],
+        low: []
+      };
+      celciusContainer.daily.today = {
+        nightTemp: convertToCelcius(Data.nightTemp),
+        high: convertToCelcius(Data.highTemp),
+        low: convertToCelcius(Data.lowTemp)
+      };
+      celciusContainer.daily.week = {
+        high: [],
+        low: []
+      };
+    } else {
+      fahrenheitContainer.daily.week.high.push(Data.highTemp);
+      fahrenheitContainer.daily.week.low.push(Data.lowTemp);
+      celciusContainer.daily.week.high.push(convertToCelcius(Data.highTemp));
+      celciusContainer.daily.week.low.push(convertToCelcius(Data.lowTemp));
+    }
+  }
 };
 
 var updateCurrentComponent = function updateCurrentComponent(weatherObj, location) {
   var CurrentData = filterForCurrentData(weatherObj);
+  storeTempData(CurrentData, 'current');
   var currentInterfaceArr = GlobalNodes.currentInterface1.children;
   currentInterfaceArr[0].textContent = location;
   currentInterfaceArr[1].textContent = CurrentData.weatherState;
@@ -10307,6 +10379,7 @@ var updateHourlyComponent = function updateHourlyComponent(weatherObj) {
 
   for (var i = 0; i < hourlyInterfaceArr.length; i++) {
     var HourlyData = filterForHourlyData(i, weatherObj);
+    storeTempData(HourlyData, 'hourly');
     var hourlyEntry = hourlyInterfaceArr[i];
 
     if (i !== 0) {
@@ -10322,6 +10395,7 @@ var updateHourlyComponent = function updateHourlyComponent(weatherObj) {
 var updateDailyComponent = function updateDailyComponent(weatherObj) {
   for (var i = 0; i < 8; i++) {
     var DailyData = filterForDailyData(i, weatherObj);
+    storeTempData(DailyData, 'daily');
 
     if (i === 0) {
       var highTemp = DailyData.highTemp;
@@ -10356,26 +10430,35 @@ var runApp = /*#__PURE__*/function () {
           case 0:
             defaultLocation = _args3.length > 0 && _args3[0] !== undefined ? _args3[0] : false;
             document.body.appendChild(GlobalNodes.loadingInterface);
-            _context3.next = 4;
+            GlobalNodes.tempData = {
+              fahrenheit: {},
+              celcius: {}
+            };
+            _context3.next = 5;
             return getGeoData(defaultLocation);
 
-          case 4:
+          case 5:
             _yield$getGeoData = _context3.sent;
             _yield$getGeoData2 = _slicedToArray(_yield$getGeoData, 3);
             latitude = _yield$getGeoData2[0];
             longitude = _yield$getGeoData2[1];
             location = _yield$getGeoData2[2];
-            _context3.next = 11;
+            _context3.next = 12;
             return getWeatherData(latitude, longitude);
 
-          case 11:
+          case 12:
             weatherObj = _context3.sent;
             updateCurrentComponent(weatherObj, location);
             updateHourlyComponent(weatherObj);
             updateDailyComponent(weatherObj);
+
+            if (GlobalNodes.celcius.classList.length > 1) {
+              changeTemp(false);
+            }
+
             GlobalNodes.loadingInterface.remove();
 
-          case 16:
+          case 18:
           case "end":
             return _context3.stop();
         }
@@ -10404,10 +10487,7 @@ var GlobalNodes = function () {
   var fahrenheit = document.querySelector('.fahrenheit');
   var loadingInterface = document.querySelector('.loader-container');
   loadingInterface.remove();
-  var tempData = {
-    'fahrenheit': {},
-    'celcius': {}
-  };
+  var tempData;
   return {
     input: input,
     searchBttn: searchBttn,
