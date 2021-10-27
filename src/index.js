@@ -8,15 +8,24 @@ const getGeoData = async (defaultLocation) => {
   } 
   else {
     locationData = GlobalNodes.input.value.replace(/\s+/g, '');
-    if (locationData === '') return;
+    if (locationData === '') {
+      insertErrorMessage();
+      return;
+    };
   }
-
   const responseObj = await fetch(
     `https://maps.googleapis.com/maps/api/geocode/json?address=${locationData}&key=AIzaSyBWnL4ZgYQmKH84rhMmlPs6eV2xLEHS-zE`,
     { mode: 'cors' }
   );
   const locationObj = await responseObj.json();
-  const city = locationObj.results[0]['formatted_address'].match(/^([^,])+/)[0];
+  let city;
+  try {
+    city = locationObj.results[0]['formatted_address'].match(/^([^,])+/)[0];
+  }
+  catch {
+    insertErrorMessage();
+    return;
+  }
   const latitude = locationObj.results[0].geometry.location.lat;
   const longitude = locationObj.results[0].geometry.location.lng;
   return [latitude, longitude, city];
@@ -29,6 +38,14 @@ const getWeatherData = async (latitude, longitude) => {
   );
   const weatherObj = await responseObj.json();
   return weatherObj;
+}
+
+const insertErrorMessage = () => {
+  const errorMessage = GlobalNodes.errorMessage;
+  errorMessage.textContent = 'Location Not Found';
+  errorMessage.className = 'error-message';
+  GlobalNodes.loader.remove();
+  GlobalNodes.loadingInterface.appendChild(errorMessage);
 }
 
 const convertToLocalTime = (unixTime, appendMinutes = false) => {
@@ -160,7 +177,8 @@ const filterForCurrentData = (weatherObj) => {
   const uvIndex = `${currentData.uvi}`;
   const temp = `${Math.floor(currentData.temp)}&deg;`;
   const weatherState = currentData.weather[0].main;
-  return {sunrise, 
+  return {
+    sunrise, 
     sunset, 
     humidity, 
     windVector, 
@@ -313,6 +331,15 @@ const storeTempData = (Data, period) => {
   }
 }
 
+const prepareLoadingInterface = () => {
+  const loaderInterfaceChild = GlobalNodes.loadingInterface.children[0];
+  if (loaderInterfaceChild.className === 'error-message') {
+    loaderInterfaceChild.remove();
+    GlobalNodes.loadingInterface.appendChild(GlobalNodes.loader);
+  }
+  document.body.appendChild(GlobalNodes.loadingInterface);
+}
+
 const updateCurrentComponent = (weatherObj, location) => {
   const CurrentData = filterForCurrentData(weatherObj);
   storeTempData(CurrentData, 'current');
@@ -376,9 +403,14 @@ const updateDailyComponent = (weatherObj) => {
 }
 
 const runApp = async (defaultLocation = false) => {
-  document.body.appendChild(GlobalNodes.loadingInterface);
+  prepareLoadingInterface();
   GlobalNodes.tempData = { fahrenheit: {}, celcius: {} };
-  const [latitude, longitude, location] = await getGeoData(defaultLocation);
+  try {
+    var [latitude, longitude, location] = await getGeoData(defaultLocation);
+  }
+  catch {
+    return;
+  }
   const weatherObj = await getWeatherData(latitude, longitude);
   updateCurrentComponent(weatherObj, location);
   updateHourlyComponent(weatherObj);
@@ -403,8 +435,10 @@ const GlobalNodes = (() => {
   const tempBtn = document.querySelector('.temp-bttn');
   const celcius = document.querySelector('.celcius');
   const fahrenheit = document.querySelector('.fahrenheit');
+  const loader = document.querySelector('.loader');
   const loadingInterface = document.querySelector('.loader-container');
   loadingInterface.remove();
+  const errorMessage = document.createElement('p');
   let tempData;
   return { 
     input, 
@@ -421,7 +455,9 @@ const GlobalNodes = (() => {
     tempBtn,
     celcius,
     fahrenheit,
-    tempData
+    tempData,
+    errorMessage,
+    loader
   };
 })();
 

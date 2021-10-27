@@ -9992,43 +9992,58 @@ var getGeoData = /*#__PURE__*/function () {
             }
 
             locationData = 'New York';
-            _context.next = 7;
+            _context.next = 9;
             break;
 
           case 4:
             locationData = GlobalNodes.input.value.replace(/\s+/g, '');
 
             if (!(locationData === '')) {
-              _context.next = 7;
+              _context.next = 8;
               break;
             }
 
+            insertErrorMessage();
             return _context.abrupt("return");
 
-          case 7:
-            _context.next = 9;
+          case 8:
+            ;
+
+          case 9:
+            _context.next = 11;
             return fetch("https://maps.googleapis.com/maps/api/geocode/json?address=".concat(locationData, "&key=AIzaSyBWnL4ZgYQmKH84rhMmlPs6eV2xLEHS-zE"), {
               mode: 'cors'
             });
 
-          case 9:
+          case 11:
             responseObj = _context.sent;
-            _context.next = 12;
+            _context.next = 14;
             return responseObj.json();
 
-          case 12:
+          case 14:
             locationObj = _context.sent;
+            _context.prev = 15;
             city = locationObj.results[0]['formatted_address'].match(/^([^,])+/)[0];
+            _context.next = 23;
+            break;
+
+          case 19:
+            _context.prev = 19;
+            _context.t0 = _context["catch"](15);
+            insertErrorMessage();
+            return _context.abrupt("return");
+
+          case 23:
             latitude = locationObj.results[0].geometry.location.lat;
             longitude = locationObj.results[0].geometry.location.lng;
             return _context.abrupt("return", [latitude, longitude, city]);
 
-          case 17:
+          case 26:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee);
+    }, _callee, null, [[15, 19]]);
   }));
 
   return function getGeoData(_x) {
@@ -10069,6 +10084,14 @@ var getWeatherData = /*#__PURE__*/function () {
     return _ref2.apply(this, arguments);
   };
 }();
+
+var insertErrorMessage = function insertErrorMessage() {
+  var errorMessage = GlobalNodes.errorMessage;
+  errorMessage.textContent = 'Location Not Found';
+  errorMessage.className = 'error-message';
+  GlobalNodes.loader.remove();
+  GlobalNodes.loadingInterface.appendChild(errorMessage);
+};
 
 var convertToLocalTime = function convertToLocalTime(unixTime) {
   var appendMinutes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -10201,7 +10224,7 @@ var filterForCurrentData = function filterForCurrentData(weatherObj) {
 
   try {
     precipitation = getRainData(currentData.rain['1h']);
-  } catch (_unused) {
+  } catch (_unused2) {
     precipitation = "0 cm";
   }
 
@@ -10355,6 +10378,17 @@ var storeTempData = function storeTempData(Data, period) {
   }
 };
 
+var prepareLoadingInterface = function prepareLoadingInterface() {
+  var loaderInterfaceChild = GlobalNodes.loadingInterface.children[0];
+
+  if (loaderInterfaceChild.className === 'error-message') {
+    loaderInterfaceChild.remove();
+    GlobalNodes.loadingInterface.appendChild(GlobalNodes.loader);
+  }
+
+  document.body.appendChild(GlobalNodes.loadingInterface);
+};
+
 var updateCurrentComponent = function updateCurrentComponent(weatherObj, location) {
   var CurrentData = filterForCurrentData(weatherObj);
   storeTempData(CurrentData, 'current');
@@ -10429,24 +10463,34 @@ var runApp = /*#__PURE__*/function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             defaultLocation = _args3.length > 0 && _args3[0] !== undefined ? _args3[0] : false;
-            document.body.appendChild(GlobalNodes.loadingInterface);
+            prepareLoadingInterface();
             GlobalNodes.tempData = {
               fahrenheit: {},
               celcius: {}
             };
-            _context3.next = 5;
+            _context3.prev = 3;
+            _context3.next = 6;
             return getGeoData(defaultLocation);
 
-          case 5:
+          case 6:
             _yield$getGeoData = _context3.sent;
             _yield$getGeoData2 = _slicedToArray(_yield$getGeoData, 3);
             latitude = _yield$getGeoData2[0];
             longitude = _yield$getGeoData2[1];
             location = _yield$getGeoData2[2];
-            _context3.next = 12;
+            _context3.next = 16;
+            break;
+
+          case 13:
+            _context3.prev = 13;
+            _context3.t0 = _context3["catch"](3);
+            return _context3.abrupt("return");
+
+          case 16:
+            _context3.next = 18;
             return getWeatherData(latitude, longitude);
 
-          case 12:
+          case 18:
             weatherObj = _context3.sent;
             updateCurrentComponent(weatherObj, location);
             updateHourlyComponent(weatherObj);
@@ -10458,12 +10502,12 @@ var runApp = /*#__PURE__*/function () {
 
             GlobalNodes.loadingInterface.remove();
 
-          case 18:
+          case 24:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3);
+    }, _callee3, null, [[3, 13]]);
   }));
 
   return function runApp() {
@@ -10485,8 +10529,10 @@ var GlobalNodes = function () {
   var tempBtn = document.querySelector('.temp-bttn');
   var celcius = document.querySelector('.celcius');
   var fahrenheit = document.querySelector('.fahrenheit');
+  var loader = document.querySelector('.loader');
   var loadingInterface = document.querySelector('.loader-container');
   loadingInterface.remove();
+  var errorMessage = document.createElement('p');
   var tempData;
   return {
     input: input,
@@ -10503,7 +10549,9 @@ var GlobalNodes = function () {
     tempBtn: tempBtn,
     celcius: celcius,
     fahrenheit: fahrenheit,
-    tempData: tempData
+    tempData: tempData,
+    errorMessage: errorMessage,
+    loader: loader
   };
 }();
 
