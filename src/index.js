@@ -1,5 +1,5 @@
 import '@babel/polyfill';
-
+import { LOCATION_KEY, WEATHER_KEY } from './api_keys';
 // returns a Promise that resolves to latitude and longitude;
 const getGeoData = async (defaultLocation) => {
   let locationData;
@@ -14,7 +14,7 @@ const getGeoData = async (defaultLocation) => {
     };
   }
   const responseObj = await fetch(
-    `https://maps.googleapis.com/maps/api/geocode/json?address=${locationData}&key=AIzaSyBWnL4ZgYQmKH84rhMmlPs6eV2xLEHS-zE`,
+    `https://maps.googleapis.com/maps/api/geocode/json?address=${locationData}&key=${LOCATION_KEY}`,
     { mode: 'cors' }
   );
   const locationObj = await responseObj.json();
@@ -33,8 +33,8 @@ const getGeoData = async (defaultLocation) => {
 
 const getWeatherData = async (latitude, longitude) => {
   const responseObj = await fetch(
-    `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely,alerts&units=imperial&appid=0c0e7e85e0b79f8172ab494cd0e6830a`,
-    {mode: 'cors'}
+    `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely,alerts&units=imperial&appid=${WEATHER_KEY}`,
+    { mode: 'cors' }
   );
   const weatherObj = await responseObj.json();
   return weatherObj;
