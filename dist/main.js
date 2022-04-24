@@ -10011,7 +10011,7 @@ var getGeoData = /*#__PURE__*/function () {
 
           case 9:
             _context.next = 11;
-            return fetch("https://maps.googleapis.com/maps/api/geocode/json?address=".concat(locationData, "&key=AIzaSyBWnL4ZgYQmKH84rhMmlPs6eV2xLEHS-zE"), {
+            return fetch("https://maps.googleapis.com/maps/api/geocode/json?address=".concat(locationData, "&key=AIzaSyCLGhL1AZHhe8r-H2d1y_ucPMYUTP7a-GQ"), {
               mode: 'cors'
             });
 
@@ -10059,7 +10059,7 @@ var getWeatherData = /*#__PURE__*/function () {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return fetch("https://api.openweathermap.org/data/2.5/onecall?lat=".concat(latitude, "&lon=").concat(longitude, "&exclude=minutely,alerts&units=imperial&appid=0c0e7e85e0b79f8172ab494cd0e6830a"), {
+            return fetch("https://api.openweathermap.org/data/2.5/onecall?lat=".concat(latitude, "&lon=").concat(longitude, "&exclude=minutely,alerts&units=imperial&appid=4817551541746a152c24e5ea9898bc6a"), {
               mode: 'cors'
             });
 

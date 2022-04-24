@@ -1,5 +1,4 @@
 import '@babel/polyfill';
-import { LOCATION_KEY, WEATHER_KEY } from './api_keys';
 // returns a Promise that resolves to latitude and longitude;
 const getGeoData = async (defaultLocation) => {
   let locationData;
@@ -13,11 +12,9 @@ const getGeoData = async (defaultLocation) => {
       return;
     };
   }
-  const responseObj = await fetch(
-    `https://maps.googleapis.com/maps/api/geocode/json?address=${locationData}&key=${LOCATION_KEY}`,
-    { mode: 'cors' }
-  );
+  const responseObj = await fetch(`../netlify/functions/location?location=${locationData}`);
   const locationObj = await responseObj.json();
+  console.log(locationObj)
   let city;
   try {
     city = locationObj.results[0]['formatted_address'].match(/^([^,])+/)[0];
@@ -33,7 +30,7 @@ const getGeoData = async (defaultLocation) => {
 
 const getWeatherData = async (latitude, longitude) => {
   const responseObj = await fetch(
-    `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely,alerts&units=imperial&appid=${WEATHER_KEY}`,
+    `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely,alerts&units=imperial&appid=4817551541746a152c24e5ea9898bc6a`,
     { mode: 'cors' }
   );
   const weatherObj = await responseObj.json();
