@@ -10011,9 +10011,7 @@ var getGeoData = /*#__PURE__*/function () {
 
           case 9:
             _context.next = 11;
-            return fetch("https://maps.googleapis.com/maps/api/geocode/json?address=".concat(locationData, "&key=AIzaSyCLGhL1AZHhe8r-H2d1y_ucPMYUTP7a-GQ"), {
-              mode: 'cors'
-            });
+            return fetch("../netlify/functions/location?location=".concat(locationData));
 
           case 11:
             responseObj = _context.sent;
@@ -10059,9 +10057,7 @@ var getWeatherData = /*#__PURE__*/function () {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return fetch("https://api.openweathermap.org/data/2.5/onecall?lat=".concat(latitude, "&lon=").concat(longitude, "&exclude=minutely,alerts&units=imperial&appid=4817551541746a152c24e5ea9898bc6a"), {
-              mode: 'cors'
-            });
+            return fetch("../netlify/functions/weather?lat=".concat(latitude, "&lon=").concat(longitude));
 
           case 2:
             responseObj = _context2.sent;
