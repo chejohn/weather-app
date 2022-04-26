@@ -12,9 +12,8 @@ const getGeoData = async (defaultLocation) => {
       return;
     };
   }
-  const responseObj = await fetch(`../netlify/functions/location?location=${locationData}`);
+  const responseObj = await fetch(`../functions/location?location=${locationData}`);
   const locationObj = await responseObj.json();
-  console.log(locationObj)
   let city;
   try {
     city = locationObj.results[0]['formatted_address'].match(/^([^,])+/)[0];
@@ -29,10 +28,7 @@ const getGeoData = async (defaultLocation) => {
 }
 
 const getWeatherData = async (latitude, longitude) => {
-  const responseObj = await fetch(
-    `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely,alerts&units=imperial&appid=4817551541746a152c24e5ea9898bc6a`,
-    { mode: 'cors' }
-  );
+  const responseObj = await fetch(`../functions/weather?lat=${latitude}&lon=${longitude}`);
   const weatherObj = await responseObj.json();
   return weatherObj;
 }
