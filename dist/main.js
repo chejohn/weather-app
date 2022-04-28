@@ -10011,7 +10011,7 @@ var getGeoData = /*#__PURE__*/function () {
 
           case 9:
             _context.next = 11;
-            return fetch("../netlify/functions/location?location=".concat(locationData));
+            return fetch("/.netlify/functions/location?location=".concat(locationData));
 
           case 11:
             responseObj = _context.sent;
@@ -10057,7 +10057,7 @@ var getWeatherData = /*#__PURE__*/function () {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return fetch("../netlify/functions/weather?lat=".concat(latitude, "&lon=").concat(longitude));
+            return fetch("/.netlify/functions/weather?lat=".concat(latitude, "&lon=").concat(longitude));
 
           case 2:
             responseObj = _context2.sent;

@@ -12,7 +12,7 @@ const getGeoData = async (defaultLocation) => {
       return;
     };
   }
-  const responseObj = await fetch(`../netlify/functions/location?location=${locationData}`);
+  const responseObj = await fetch(`/.netlify/functions/location?location=${locationData}`);
   const locationObj = await responseObj.json();
   let city;
   try {
@@ -28,7 +28,7 @@ const getGeoData = async (defaultLocation) => {
 }
 
 const getWeatherData = async (latitude, longitude) => {
-  const responseObj = await fetch(`../netlify/functions/weather?lat=${latitude}&lon=${longitude}`);
+  const responseObj = await fetch(`/.netlify/functions/weather?lat=${latitude}&lon=${longitude}`);
   const weatherObj = await responseObj.json();
   return weatherObj;
 }
