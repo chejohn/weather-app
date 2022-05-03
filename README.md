@@ -7,3 +7,7 @@ Uses Google's geocoding API to fetch the coordinates of a location; these coordi
 * JSON format
 * HTTP GET request to API
 * Regex 
+
+# Link To Site
+
+https://weather-app-cj.netlify.app/
